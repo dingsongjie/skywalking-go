@@ -71,14 +71,14 @@ func (i *Instrument) Points() []*instrument.Point {
 			PackagePath: "",
 			At: instrument.NewMethodEnhance("*Server", "handleStream",
 				instrument.WithArgType(0, "transport.ServerTransport"),
-				instrument.WithArgType(1, "transport.Stream")),
+				instrument.WithArgType(1, "*transport.Stream")),
 			Interceptor: "ServerHandleStreamInterceptor",
 		},
 		{
 			PackagePath: "",
 			At: instrument.NewMethodEnhance("*Server", "handleStream",
 				instrument.WithArgType(0, "transport.ServerTransport"),
-				instrument.WithArgType(1, "transport.ServerStream")),
+				instrument.WithArgType(1, "*transport.ServerStream")),
 			Interceptor: "ServerHandleStreamInterceptorV2",
 		},
 		{
