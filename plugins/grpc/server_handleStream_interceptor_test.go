@@ -40,7 +40,13 @@ func TestServerHandleStreamInterceptorBeforeInvoke(t *testing.T) {
 
 	err := interceptor.BeforeInvoke(invocation)
 	assert.Nil(t, err)
-	assert.NotNil(t, invocation.GetContext())
+	assert.Nil(t, invocation.GetContext())
+
+	time.Sleep(100 * time.Millisecond)
+	spans := core.GetReportedSpans()
+	assert.NotNil(t, spans)
+	assert.Equal(t, 1, len(spans))
+	assert.Equal(t, "api.Echo.UnaryEcho", spans[0].OperationName())
 }
 
 func TestServerHandleStreamInterceptorAfterInvoke(t *testing.T) {
@@ -92,7 +98,13 @@ func TestServerHandleStreamInterceptorV2BeforeInvokeWithServerStream(t *testing.
 
 	err := interceptor.BeforeInvoke(invocation)
 	assert.Nil(t, err)
-	assert.NotNil(t, invocation.GetContext())
+	assert.Nil(t, invocation.GetContext())
+
+	time.Sleep(100 * time.Millisecond)
+	spans := core.GetReportedSpans()
+	assert.NotNil(t, spans)
+	assert.Equal(t, 1, len(spans))
+	assert.Equal(t, "api.Echo.ServerStreamingEcho", spans[0].OperationName())
 }
 
 func TestServerHandleStreamInterceptorV2AfterInvoke(t *testing.T) {

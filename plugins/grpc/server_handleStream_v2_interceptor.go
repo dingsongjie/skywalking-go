@@ -46,7 +46,8 @@ func (h *ServerHandleStreamInterceptorV2) BeforeInvoke(invocation operator.Invoc
 	if err != nil {
 		return err
 	}
-	invocation.SetContext(s)
+	s.End()
+	invocation.SetContext(nil)
 	return nil
 }
 

@@ -28,6 +28,9 @@ type ServerSendMsgInterceptor struct {
 }
 
 func (h *ServerSendMsgInterceptor) BeforeInvoke(invocation operator.Invocation) error {
+	if tracing.ActiveSpan() == nil {
+		return nil
+	}
 	ss := invocation.CallerInstance().(*nativeserverStream)
 	method := ss.s.Method()
 	if strings.HasPrefix(method, skywalkingService) {

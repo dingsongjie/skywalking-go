@@ -35,11 +35,12 @@ func (h *ClientRecvMsgInterceptor) BeforeInvoke(invocation operator.Invocation) 
 		return nil
 	}
 	csEnhanced, ok := invocation.CallerInstance().(operator.EnhancedInstance)
-	if ok && csEnhanced.GetSkyWalkingDynamicField() != nil {
-		contextdata := csEnhanced.GetSkyWalkingDynamicField().(*contextData)
-		tracing.ContinueContext(contextdata.continueSnapShot)
-		contextdata.interceptFinish = true
+	if !ok || csEnhanced.GetSkyWalkingDynamicField() == nil {
+		return nil
 	}
+	contextdata := csEnhanced.GetSkyWalkingDynamicField().(*contextData)
+	tracing.ContinueContext(contextdata.continueSnapShot)
+	contextdata.interceptFinish = true
 	s, err := tracing.CreateLocalSpan(formatOperationName(method, "/Client/Response/RecvMsg"),
 		tracing.WithLayer(tracing.SpanLayerRPCFramework),
 		tracing.WithTag(tracing.TagURL, method),

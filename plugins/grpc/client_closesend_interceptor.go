@@ -33,6 +33,10 @@ func (h *ClientCloseSendInterceptor) BeforeInvoke(invocation operator.Invocation
 	if strings.HasPrefix(method, skywalkingService) {
 		return nil
 	}
+	csEnhanced, ok := invocation.CallerInstance().(operator.EnhancedInstance)
+	if !ok || csEnhanced.GetSkyWalkingDynamicField() == nil {
+		return nil
+	}
 	s, err := tracing.CreateLocalSpan(formatOperationName(method, "/Client/Response/CloseSend"),
 		tracing.WithLayer(tracing.SpanLayerRPCFramework),
 		tracing.WithTag(tracing.TagURL, method),

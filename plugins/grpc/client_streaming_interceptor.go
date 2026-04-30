@@ -76,18 +76,7 @@ func (h *ClientStreamingInterceptor) AfterInvoke(invocation operator.Invocation,
 	if err, ok := result[0].(error); ok && err != nil {
 		span.Error(err.Error())
 	}
-	span.PrepareAsync()
-	continueSnapShot := tracing.CaptureContext()
 	span.End()
-	csEnhanced, ok := result[0].(operator.EnhancedInstance)
-	if !ok {
-		return nil
-	}
-	csEnhanced.SetSkyWalkingDynamicField(&contextData{
-		asyncSpan:        span,
-		continueSnapShot: continueSnapShot,
-		endSnapShot:      tracing.CaptureContext(),
-		interceptFinish:  false,
-	})
+	// Per-message tracing is skipped for streaming RPCs to avoid unbounded segment growth
 	return nil
 }
