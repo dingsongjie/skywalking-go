@@ -18,44 +18,16 @@
 package grpc
 
 import (
-	"strings"
-
 	"github.com/apache/skywalking-go/plugins/core/operator"
-	"github.com/apache/skywalking-go/plugins/core/tracing"
 )
 
 type ServerSendMsgInterceptor struct {
 }
 
 func (h *ServerSendMsgInterceptor) BeforeInvoke(invocation operator.Invocation) error {
-	if tracing.ActiveSpan() == nil {
-		return nil
-	}
-	ss := invocation.CallerInstance().(*nativeserverStream)
-	method := ss.s.Method()
-	if strings.HasPrefix(method, skywalkingService) {
-		return nil
-	}
-	s, err := tracing.CreateLocalSpan(formatOperationName(method, "/Server/Request/SendMsg"),
-		tracing.WithLayer(tracing.SpanLayerRPCFramework),
-		tracing.WithTag(tracing.TagURL, method),
-		tracing.WithComponent(23),
-	)
-	if err != nil {
-		return err
-	}
-	invocation.SetContext(s)
 	return nil
 }
 
 func (h *ServerSendMsgInterceptor) AfterInvoke(invocation operator.Invocation, result ...interface{}) error {
-	if invocation.GetContext() == nil {
-		return nil
-	}
-	span := invocation.GetContext().(tracing.Span)
-	if err, ok := result[0].(error); ok && err != nil {
-		span.Error(err.Error())
-	}
-	span.End()
 	return nil
 }

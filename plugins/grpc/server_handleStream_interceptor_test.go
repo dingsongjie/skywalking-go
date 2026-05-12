@@ -20,7 +20,6 @@ package grpc
 import (
 	"context"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -40,13 +39,7 @@ func TestServerHandleStreamInterceptorBeforeInvoke(t *testing.T) {
 
 	err := interceptor.BeforeInvoke(invocation)
 	assert.Nil(t, err)
-	assert.Nil(t, invocation.GetContext())
-
-	time.Sleep(100 * time.Millisecond)
-	spans := core.GetReportedSpans()
-	assert.NotNil(t, spans)
-	assert.Equal(t, 1, len(spans))
-	assert.Equal(t, "api.Echo.UnaryEcho", spans[0].OperationName())
+	assert.NotNil(t, invocation.GetContext())
 }
 
 func TestServerHandleStreamInterceptorAfterInvoke(t *testing.T) {
@@ -62,12 +55,9 @@ func TestServerHandleStreamInterceptorAfterInvoke(t *testing.T) {
 	err := interceptor.BeforeInvoke(invocation)
 	assert.Nil(t, err)
 
-	time.Sleep(100 * time.Millisecond)
-
 	err = interceptor.AfterInvoke(invocation)
 	assert.Nil(t, err)
 
-	time.Sleep(100 * time.Millisecond)
 	spans := core.GetReportedSpans()
 	assert.NotNil(t, spans)
 	assert.Equal(t, 1, len(spans))
@@ -98,13 +88,7 @@ func TestServerHandleStreamInterceptorV2BeforeInvokeWithServerStream(t *testing.
 
 	err := interceptor.BeforeInvoke(invocation)
 	assert.Nil(t, err)
-	assert.Nil(t, invocation.GetContext())
-
-	time.Sleep(100 * time.Millisecond)
-	spans := core.GetReportedSpans()
-	assert.NotNil(t, spans)
-	assert.Equal(t, 1, len(spans))
-	assert.Equal(t, "api.Echo.ServerStreamingEcho", spans[0].OperationName())
+	assert.NotNil(t, invocation.GetContext())
 }
 
 func TestServerHandleStreamInterceptorV2AfterInvoke(t *testing.T) {
@@ -122,12 +106,9 @@ func TestServerHandleStreamInterceptorV2AfterInvoke(t *testing.T) {
 	err := interceptor.BeforeInvoke(invocation)
 	assert.Nil(t, err)
 
-	time.Sleep(100 * time.Millisecond)
-
 	err = interceptor.AfterInvoke(invocation)
 	assert.Nil(t, err)
 
-	time.Sleep(100 * time.Millisecond)
 	spans := core.GetReportedSpans()
 	assert.NotNil(t, spans)
 	assert.Equal(t, 1, len(spans))

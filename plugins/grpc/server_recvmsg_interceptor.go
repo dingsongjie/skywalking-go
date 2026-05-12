@@ -18,51 +18,16 @@
 package grpc
 
 import (
-	"io"
-	"strings"
-
 	"github.com/apache/skywalking-go/plugins/core/operator"
-	"github.com/apache/skywalking-go/plugins/core/tracing"
 )
 
 type ServerRecvMsgInterceptor struct {
 }
 
 func (h *ServerRecvMsgInterceptor) BeforeInvoke(invocation operator.Invocation) error {
-	if tracing.ActiveSpan() == nil {
-		return nil
-	}
-	ss := invocation.CallerInstance().(*nativeserverStream)
-	method := ss.s.Method()
-	if strings.HasPrefix(method, skywalkingService) {
-		return nil
-	}
-	s, err := tracing.CreateLocalSpan(formatOperationName(method, "/Server/Response/RecvMsg"),
-		tracing.WithLayer(tracing.SpanLayerRPCFramework),
-		tracing.WithTag(tracing.TagURL, method),
-		tracing.WithComponent(23),
-	)
-	invocation.SetContext(s)
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
 func (h *ServerRecvMsgInterceptor) AfterInvoke(invocation operator.Invocation, result ...interface{}) error {
-	if invocation.GetContext() == nil {
-		return nil
-	}
-	span := invocation.GetContext().(tracing.Span)
-	err, ok := result[0].(error)
-	if ok && err != nil && err != io.EOF {
-		span.Error(err.Error())
-	}
-	if err == io.EOF {
-		ss := invocation.CallerInstance().(*nativeserverStream)
-		method := ss.s.Method()
-		span.SetOperationName(formatOperationName(method, "/Server/Response/CloseRecv"))
-	}
-	span.End()
 	return nil
 }
